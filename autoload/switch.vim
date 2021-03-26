@@ -7,8 +7,8 @@ var loaded = true
 
 const SWITCHABLE_TOKENS: list<list<string>> = [
     ['==', '!='],
-    ['>', '<', '>=', '<='],
     ['=~', '!~'],
+    ['>', '<', '>=', '<='],
     ['true', 'false'],
     ]
 
@@ -35,15 +35,16 @@ lockvar! TOKENS_MAP
 def switch#jump(forward = true) #{{{2
     var flags: string = (forward ? '' : 'b') .. 'eW'
     var stopline: number = line('.')
-    searchpos('\s\%(\V' .. TOKENS_PAT .. '\m\)\ze\s', flags, stopline)
+    searchpos('\%(^\|\s\)\%(\V' .. TOKENS_PAT .. '\m\)\ze\%(\s\|$\)', flags, stopline)
 enddef
 
 def switch#replace(increment = true) #{{{2
     var cnt: number = v:count
     var token: string = getline('.')->matchstr('\S*\%' .. col('.') .. 'c\S\+')
     var map: dict<string> = TOKENS_MAP[increment ? 'increment' : 'decrement']
-    # if there is no known token under the cursor, fall back on the default C-a/C-x command
     if !map->has_key(token)
+        # if there is no known token under the cursor,
+        # fall back on the default C-a/C-x command
         exe 'norm! ' .. (cnt == 0 ? '' : cnt) .. (increment ? "\<c-a>" : "\<c-x>")
     else
         # there is a known token; find out the new desired token
