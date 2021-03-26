@@ -3,7 +3,7 @@ vim9script noclear
 if exists('loaded') | finish | endif
 var loaded = true
 
-# Init {{{1
+# Config {{{1
 
 const SWITCHABLE_TOKENS: list<list<string>> = [
     ['==', '!='],
@@ -11,6 +11,8 @@ const SWITCHABLE_TOKENS: list<list<string>> = [
     ['=~', '!~'],
     ['true', 'false'],
     ]
+
+# Init {{{1
 
 const TOKENS_PAT: string = SWITCHABLE_TOKENS->flattennew()->join('\|')
 
