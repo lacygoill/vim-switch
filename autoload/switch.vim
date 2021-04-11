@@ -10,7 +10,8 @@ const SWITCHABLE_TOKENS: list<list<string>> = [
     ['=~', '!~'],
     ['>', '<', '>=', '<='],
     ['true', 'false'],
-    ]
+    ['✔', '✘'],
+]
 
 # Init {{{1
 
