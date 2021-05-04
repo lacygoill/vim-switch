@@ -10,6 +10,7 @@ const SWITCHABLE_TOKENS: list<list<string>> = [
     ['=~', '!~'],
     ['>', '<', '>=', '<='],
     ['true', 'false'],
+    ['True', 'False'],
     ['✔', '✘'],
 ]
 
@@ -25,7 +26,7 @@ def PopulateTokensMap()
         for token in l
             extend(TOKENS_MAP.increment, {[token]: l[(i + 1) % len]})
             extend(TOKENS_MAP.decrement, {[token]: l[i == 0 ? len - 1 : i - 1]})
-            i += 1
+            ++i
         endfor
     endfor
 enddef
