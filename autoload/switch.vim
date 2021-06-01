@@ -41,6 +41,9 @@ def switch#jump(forward = true) #{{{2
 enddef
 
 def switch#replace(increment = true) #{{{2
+    if !&modifiable
+        return
+    endif
     var cnt: number = v:count
     var token: string = getline('.')->matchstr('\S*\%' .. col('.') .. 'c\S\+')
     var map: dict<string> = TOKENS_MAP[increment ? 'increment' : 'decrement']
