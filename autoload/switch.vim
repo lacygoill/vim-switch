@@ -9,6 +9,8 @@ const SWITCHABLE_TOKENS: list<list<string>> = [
     ['==', '!='],
     ['=~', '!~'],
     ['>', '<', '>=', '<='],
+    ['enable', 'disable'],
+    ['on', 'off'],
     ['true', 'false'],
     ['True', 'False'],
     ['✔', '✘'],
@@ -45,7 +47,16 @@ def switch#replace(increment = true) #{{{2
         return
     endif
     var cnt: number = v:count
-    var token: string = getline('.')->matchstr('\S*\%' .. col('.') .. 'c\S\+')
+    var token: string = getline('.')
+        # Let's ignore commas.{{{
+        #
+        # So that we can toggle `true` into `false`, here:
+        #
+        #     var d = {
+        #         key: true,
+        #     }
+        #}}}
+        ->matchstr('\S*\%' .. col('.') .. 'c[^ \t,]\+')
     var map: dict<string> = TOKENS_MAP[increment ? 'increment' : 'decrement']
     if !map->has_key(token)
         # if there is no known token under the cursor,
@@ -65,7 +76,7 @@ def switch#replace(increment = true) #{{{2
         search('\%(\s\zs\|^\)\S\+', 'bcW', stopline)
         # replace the token
         getline('.')
-            ->substitute('\%' .. col('.') .. 'c\S\+', new_token, '')
+            ->substitute('\%' .. col('.') .. 'c[^ \t,]\+', new_token, '')
             ->setline('.')
         # position the cursor at the end of the token
         # (to emulate the behavior of the default C-a command)
