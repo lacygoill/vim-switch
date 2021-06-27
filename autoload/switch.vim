@@ -18,7 +18,9 @@ const SWITCHABLE_TOKENS: list<list<string>> = [
 
 # Init {{{1
 
-const TOKENS_PAT: string = SWITCHABLE_TOKENS->flattennew()->join('\|')
+const TOKENS_PAT: string = SWITCHABLE_TOKENS
+    ->flattennew()
+    ->join('\|')
 
 var TOKENS_MAP: dict<dict<string>> = {increment: {}, decrement: {}}
 def PopulateTokensMap()
@@ -47,16 +49,10 @@ def switch#replace(increment = true) #{{{2
         return
     endif
     var cnt: number = v:count
-    var token: string = getline('.')
-        # Let's ignore commas.{{{
-        #
-        # So that we can toggle `true` into `false`, here:
-        #
-        #     var d = {
-        #         key: true,
-        #     }
-        #}}}
-        ->matchstr('\S*\%' .. col('.') .. 'c[^ \t,]\+')
+
+    var token: string
+    var startcol: number
+    [token, startcol] = GetTokenAndStartCol()
     var map: dict<string> = TOKENS_MAP[increment ? 'increment' : 'decrement']
     if !map->has_key(token)
         # if there is no known token under the cursor,
@@ -71,16 +67,63 @@ def switch#replace(increment = true) #{{{2
                 new_token = map[new_token]
             endfor
         endif
-        var stopline: number = line('.')
         # position the cursor at the start of the token
-        search('\%(\s\zs\|^\)\S\+', 'bcW', stopline)
+        cursor(0, startcol)
+        var col: number = col('.')
         # replace the token
+        var pat: string = '\%' .. col .. 'c.\{' .. token->strcharlen() .. '}'
         getline('.')
-            ->substitute('\%' .. col('.') .. 'c[^ \t,]\+', new_token, '')
+            ->substitute(pat, new_token, '')
             ->setline('.')
         # position the cursor at the end of the token
         # (to emulate the behavior of the default C-a command)
-        search('\S\ze\s\|$', 'cW', stopline)
+        cursor(0, col + new_token->len() - 1)
     endif
 enddef
 
+def GetTokenAndStartCol(): list<any> #{{{2
+# Return the token under the cursor (if any).
+# If you find one, give us the
+    var token_under_cursor: string
+    var startcol: number
+
+    var line: string = getline('.')
+    var col: number = col('.')
+    var match: bool
+    # iterate over our chains of tokens
+    for tokens in SWITCHABLE_TOKENS
+        # iterate over the tokens in a given chain
+        for token in tokens
+            # Try to match the token; the cursor can be anywhere inside.{{{
+            #
+            #     token
+            #     ^
+            #     token
+            #      ^
+            #     token
+            #       ^
+            #     token
+            #        ^
+            #     token
+            #         ^
+            #
+            # If it doesn't match right away, don't give up.
+            # Try again, but just one byte earlier.
+            # Go on  until you've  moved back  too far  away for  a match  to be
+            # possible.
+            #}}}
+            var len: number = token->len()
+            for offset in len->range()
+                if line->strpart(col - 1 - offset, len) == token
+                    [token_under_cursor, startcol] = [token, col('.') - offset]
+                    match = true
+                    break
+                endif
+            endfor
+        endfor
+        if match
+            break
+        endif
+    endfor
+    return [token_under_cursor, startcol]
+enddef
