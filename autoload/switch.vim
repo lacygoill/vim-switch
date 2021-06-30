@@ -57,7 +57,7 @@ def switch#replace(increment = true) #{{{2
     if !map->has_key(token)
         # if there is no known token under the cursor,
         # fall back on the default C-a/C-x command
-        exe 'norm! ' .. (cnt == 0 ? '' : cnt) .. (increment ? "\<c-a>" : "\<c-x>")
+        execute 'normal! ' .. (cnt == 0 ? '' : cnt) .. (increment ? "\<C-A>" : "\<C-X>")
     else
         # there is a known token; find out the new desired token
         var new_token: string = map[token]

@@ -3,9 +3,9 @@ vim9script noclear
 if exists('loaded') | finish | endif
 var loaded = true
 
-nno <c-a> <cmd>call switch#replace()<cr>
-nno <c-x> <cmd>call switch#replace(v:false)<cr>
+nnoremap <C-A> <Cmd>call switch#replace()<CR>
+nnoremap <C-X> <Cmd>call switch#replace(v:false)<CR>
 
-nno s<c-a> <cmd>call switch#jump()<cr>
-nno S<c-a> <cmd>call switch#jump(v:false)<cr>
+nnoremap s<C-A> <Cmd>call switch#jump()<CR>
+nnoremap S<C-A> <Cmd>call switch#jump(v:false)<CR>
 
