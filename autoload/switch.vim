@@ -1,8 +1,5 @@
 vim9script noclear
 
-if exists('loaded') | finish | endif
-var loaded = true
-
 # Config {{{1
 
 const SWITCHABLE_TOKENS: list<list<string>> = [
@@ -38,10 +35,10 @@ PopulateTokensMap()
 lockvar! TOKENS_MAP
 
 # Functions {{{1
-def switch#jump(forward = true) #{{{2
-    var flags: string = (forward ? '' : 'b') .. 'eW'
+def switch#jump(is_fwd = true) #{{{2
+    var flags: string = (is_fwd ? '' : 'b') .. 'eW'
     var stopline: number = line('.')
-    searchpos('\%(^\|\s\)\%(\V' .. TOKENS_PAT .. '\m\)\ze\%(\s\|$\)', flags, stopline)
+    search('\%(^\|\s\)\%(\V' .. TOKENS_PAT .. '\m\)\ze\%(\s\|$\)', flags, stopline)
 enddef
 
 def switch#replace(increment = true) #{{{2
@@ -71,7 +68,7 @@ def switch#replace(increment = true) #{{{2
         cursor(0, startcol)
         var col: number = col('.')
         # replace the token
-        var pat: string = '\%' .. col .. 'c.\{' .. token->strcharlen() .. '}'
+        var pat: string = '\%.c.\{' .. token->strcharlen() .. '}'
         getline('.')
             ->substitute(pat, new_token, '')
             ->setline('.')
