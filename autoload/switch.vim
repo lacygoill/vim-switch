@@ -60,7 +60,7 @@ def switch#replace(increment = true) #{{{2
         var new_token: string = map[token]
         # support a possible count
         if cnt > 1
-            for i: number in range(cnt - 1)
+            for _ in range(cnt - 1)
                 new_token = map[new_token]
             endfor
         endif
