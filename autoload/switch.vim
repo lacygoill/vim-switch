@@ -21,10 +21,10 @@ const TOKENS_PAT: string = SWITCHABLE_TOKENS
 
 var TOKENS_MAP: dict<dict<string>> = {increment: {}, decrement: {}}
 def PopulateTokensMap()
-    for l in SWITCHABLE_TOKENS
+    for l: list<string> in SWITCHABLE_TOKENS
         var len: number = len(l)
         var i: number
-        for token in l
+        for token: string in l
             extend(TOKENS_MAP.increment, {[token]: l[(i + 1) % len]})
             extend(TOKENS_MAP.decrement, {[token]: l[i == 0 ? len - 1 : i - 1]})
             ++i
@@ -60,7 +60,7 @@ def switch#replace(increment = true) #{{{2
         var new_token: string = map[token]
         # support a possible count
         if cnt > 1
-            for i in range(cnt - 1)
+            for i: number in range(cnt - 1)
                 new_token = map[new_token]
             endfor
         endif
@@ -88,9 +88,9 @@ def GetTokenAndStartCol(): list<any> #{{{2
     var col: number = col('.')
     var match: bool
     # iterate over our chains of tokens
-    for tokens in SWITCHABLE_TOKENS
+    for tokens: list<string> in SWITCHABLE_TOKENS
         # iterate over the tokens in a given chain
-        for token in tokens
+        for token: string in tokens
             # Try to match the token; the cursor can be anywhere inside.{{{
             #
             #     token
@@ -110,7 +110,7 @@ def GetTokenAndStartCol(): list<any> #{{{2
             # possible.
             #}}}
             var len: number = token->len()
-            for offset in len->range()
+            for offset: number in len->range()
                 if line->strpart(col - 1 - offset, len) == token
                     [token_under_cursor, startcol] = [token, col('.') - offset]
                     match = true
