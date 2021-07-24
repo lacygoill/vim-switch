@@ -20,7 +20,7 @@ const TOKENS_PAT: string = SWITCHABLE_TOKENS
     ->join('\|')
 
 var TOKENS_MAP: dict<dict<string>> = {increment: {}, decrement: {}}
-def PopulateTokensMap()
+{
     for l: list<string> in SWITCHABLE_TOKENS
         var len: number = len(l)
         var i: number
@@ -30,8 +30,7 @@ def PopulateTokensMap()
             ++i
         endfor
     endfor
-enddef
-PopulateTokensMap()
+}
 lockvar! TOKENS_MAP
 
 # Functions {{{1
